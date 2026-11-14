@@ -1,0 +1,7 @@
+{
+  "appId": "com.ahmedyoussef.central",
+  "appName": "سنترال أحمد يوسف",
+  "webDir": "www",
+  "server": { "androidScheme": "https" },
+  "plugins": { "LocalNotifications": { "iconColor": "#16365F" } }
+}
