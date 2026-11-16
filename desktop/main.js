@@ -1,5 +1,5 @@
 /* سنترال أحمد يوسف — نسخة سطح المكتب (ويندوز). تعمل بدون إنترنت، وتبقى في شريط المهام ليعمل الأذان والتنبيهات. */
-const { app, BrowserWindow, Tray, Menu, protocol, net, shell, nativeImage } = require('electron');
+const { app, BrowserWindow, Tray, Menu, protocol, net, shell, nativeImage, session } = require('electron');
 const path = require('path');
 const { pathToFileURL } = require('url');
 
@@ -15,6 +15,9 @@ if (!app.requestSingleInstanceLock()) { app.quit(); }
 else {
   app.on('second-instance', () => { if (win) { win.show(); win.focus(); } });
   app.whenReady().then(() => {
+    /* السماح بالكاميرا والإشعارات لهذا التطبيق فقط */
+    session.defaultSession.setPermissionRequestHandler((wc, permission, cb) => cb(['media', 'notifications', 'fullscreen', 'clipboard-sanitized-write'].includes(permission)));
+    session.defaultSession.setPermissionCheckHandler((wc, permission) => ['media', 'notifications', 'fullscreen', 'clipboard-sanitized-write'].includes(permission));
     protocol.handle('app', req => {
       let p = decodeURIComponent(new URL(req.url).pathname);
       if (p === '/' || p === '') p = '/index.html';

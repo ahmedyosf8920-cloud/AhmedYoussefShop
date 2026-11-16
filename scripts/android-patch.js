@@ -4,8 +4,9 @@ const root = path.join(__dirname, '..'), app = path.join(root, 'android', 'app',
 const mf = path.join(app, 'AndroidManifest.xml');
 if (!fs.existsSync(mf)) { console.error('مجلد android غير موجود. نفّذ: npm run android:init'); process.exit(1); }
 let x = fs.readFileSync(mf, 'utf8');
-const perms = ['INTERNET', 'ACCESS_FINE_LOCATION', 'ACCESS_COARSE_LOCATION', 'POST_NOTIFICATIONS', 'SCHEDULE_EXACT_ALARM', 'USE_EXACT_ALARM', 'RECEIVE_BOOT_COMPLETED', 'VIBRATE', 'WAKE_LOCK'];
+const perms = ['INTERNET', 'ACCESS_FINE_LOCATION', 'ACCESS_COARSE_LOCATION', 'POST_NOTIFICATIONS', 'CAMERA', 'SCHEDULE_EXACT_ALARM', 'USE_EXACT_ALARM', 'RECEIVE_BOOT_COMPLETED', 'VIBRATE', 'WAKE_LOCK'];
 for (const p of perms) if (!x.includes('android.permission.' + p + '"')) x = x.replace('</manifest>', '    <uses-permission android:name="android.permission.' + p + '" />\n</manifest>');
+if (!x.includes('android.hardware.camera')) x = x.replace('</manifest>', '    <uses-feature android:name="android.hardware.camera" android:required="false" />\n</manifest>');
 if (!x.includes('com.whatsapp.w4b')) x = x.replace('</manifest>', '    <queries>\n        <package android:name="com.whatsapp.w4b" />\n        <package android:name="com.whatsapp" />\n    </queries>\n</manifest>');
 fs.writeFileSync(mf, x);
 /* جسر واتساب بيزنس: يفتح الرسالة في WhatsApp Business أولًا ثم واتساب العادي */
@@ -62,3 +63,13 @@ fs.rmSync(path.join(res, 'mipmap-anydpi-v26'), { recursive: true, force: true })
 for (const d of fs.readdirSync(res).filter(d => d.startsWith('mipmap-')))
   for (const n of ['ic_launcher.png', 'ic_launcher_round.png', 'ic_launcher_foreground.png']) fs.copyFileSync(icon, path.join(res, d, n));
 console.log('تم تعديل AndroidManifest والأيقونات');
+
+/* لون شريط الحالة بنفس لون شريط MicroPOS */
+const st = path.join(app, 'res', 'values', 'styles.xml');
+if (fs.existsSync(st)) {
+  let sx = fs.readFileSync(st, 'utf8');
+  if (!sx.includes('statusBarColor')) {
+    sx = sx.replace(/(<style name="AppTheme\.NoActionBar"[^>]*>)/, '$1\n        <item name="android:statusBarColor">#2F3E9E</item>');
+    fs.writeFileSync(st, sx);
+  }
+}
