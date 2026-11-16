@@ -5,7 +5,7 @@
 <link rel="shortcut icon" href="icon-192.png">
 <link rel="manifest" href="manifest.json"><meta name="theme-color" content="#16365f"><link rel="apple-touch-icon" href="icon-192.png">
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ahmed Youssef Mobile Services – Version 30.5</title>
+<title>Ahmed Youssef Mobile Services – Version 30.6</title>
 <style>
 :root{--navy:#16365f;--blue:#1768d2;--bg:#f3f6fb;--line:#e0e7f0;--muted:#66758a;--red:#a52323;--green:#157347}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#182943;font-family:Tahoma,Arial,sans-serif}header{background:var(--navy);color:white;padding:17px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}header h1{margin:0;font-size:21px}header p{margin:6px 0 0;color:#d8e5f6;font-size:13px}.wrap{max-width:1250px;margin:auto;padding:15px}.nav{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}.nav button,button,.btn{font:inherit;border:0;border-radius:8px;padding:9px 12px;cursor:pointer}.nav button{background:#e0e9f5;color:var(--navy)}.nav button.active,.primary{background:var(--blue);color:white}.card{background:white;border:1px solid var(--line);border-radius:12px;padding:15px;margin-bottom:14px;box-shadow:0 3px 12px #152c4a08}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:11px;margin-bottom:14px}.metric{font-size:23px;font-weight:bold;margin-top:7px;overflow-wrap:anywhere}.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:11px}label{display:block;font-size:13px;color:#40516b}input,select,textarea{display:block;width:100%;margin-top:6px;padding:10px;border:1px solid #cbd6e5;border-radius:7px;font:inherit;background:#fff;color:#182943}textarea{min-height:65px;resize:vertical}table{width:100%;border-collapse:collapse;min-width:650px}th,td{text-align:right;border-bottom:1px solid #e8edf4;padding:10px;font-size:13px;vertical-align:top}th{background:#f6f8fb;color:#40516b}.tablewrap{overflow:auto;margin-top:12px}.muted{color:var(--muted);font-size:13px}.actions{display:flex;gap:6px;flex-wrap:wrap}.secondary{background:#e7edf6;color:#19385e}.danger{background:#ffe4e4;color:#9d2020}.success{background:#e0f5e9;color:#146c43}.empty{padding:22px;text-align:center;color:#718096}.notice{background:#fff2cf;color:#775200;padding:11px;border-radius:8px;margin-bottom:12px;font-size:13px}.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.row h2,h2{font-size:17px;margin:0 0 12px}.subhead{margin:15px 0 9px;font-size:14px}.small{font-size:12px;padding:6px 8px}.pill{display:inline-block;border-radius:20px;background:#eef3fa;padding:4px 8px;font-size:12px}.green{color:var(--green)}.red{color:var(--red)}.hidden{display:none!important}.search{max-width:330px}.actions form{display:inline}.footer{text-align:center;color:#758197;font-size:12px;padding:18px}.twocol{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.tabs button{background:#e9eff8}.tabs button.active{background:var(--navy);color:#fff}.total{font-weight:bold;color:var(--navy)}@media(max-width:600px){header h1{font-size:18px}.wrap{padding:9px}.card{padding:12px}.nav button{flex:1 1 42%}.metric{font-size:21px}}@media print{header,.nav,button,.notice,.no-print,.footer{display:none!important}body{background:white}.wrap{max-width:none;padding:0}.card{box-shadow:none;border:0}.tablewrap{overflow:visible}table{min-width:0}th,td{font-size:10px;padding:6px}}
@@ -1219,7 +1219,7 @@ setTimeout(function(){var g=el('cloudGate');if(g&&g.style.display!=='none'&&/ج�
 /* ===== AYS V30 ===== */
 
 (function(){
-var VER='30.5';
+var VER='30.6';
 document.body.classList.add('v30');
 try{document.title='Ahmed Youssef Mobile Services – Version '+VER}catch(e){}
 function $(i){return document.getElementById(i)}
@@ -1242,7 +1242,12 @@ function calc(){
  var low=(D.products||[]).filter(function(p){return nn(p.quantity)<=nn(p.minimum)}).length,
      rep=(D.repairs||[]).filter(function(r){return !/تسليم|مسلم|مسلّم|ملغ/.test(String(r.status||''))}).length,
      notif=0;try{notif=appAlerts().length}catch(e){}
- return {sales:sales,purchases:purchases,profit:sales-cost+repProfit-expenses,expenses:expenses,due:due,low:low,rep:rep,inv:ss.length,notif:notif};
+ var wi=0,wo=0;(D.walletTransactions||[]).filter(function(x){return x.date===t}).forEach(function(x){if(x.direction==='in')wi+=nn(x.amount);else if(x.direction==='out')wo+=nn(x.amount)});
+ var opening=(D.shifts&&D.shifts.length)?nn(D.shifts[0].actual):0,
+  cash=opening+(wi-wo)+sales+rr.reduce(function(a,x){return a+nn(x.paid)},0)+(D.installmentPayments||[]).filter(function(x){return x.date===t}).reduce(function(a,x){return a+nn(x.amount)},0)-pp.reduce(function(a,x){return a+nn(x.paid)},0)-expenses,
+  counted=(D.moneyCounts||[]).filter(function(x){return x.date===t}).reduce(function(a,x){return a+nn(x.total)},0),
+  shiftTxt=(D.shifts||[]).some(function(x){return x.date===t})?'تم القفل ✅':'لم يُقفل بعد';
+ return {cash:cash,counted:counted,shiftTxt:shiftTxt,sales:sales,purchases:purchases,profit:sales-cost+repProfit-expenses,expenses:expenses,due:due,low:low,rep:rep,inv:ss.length,notif:notif};
 }
 
 /* ---------- التنقل ---------- */
@@ -1272,12 +1277,12 @@ function tile(t){var lock=false;try{lock=!aysCan(realKey(t[2]))}catch(e){}
  return '<button type="button" class="v30-t'+(lock?' lock':'')+'" onclick="v30Go(\''+t[2]+'\')"><span class="v30-ti">'+t[1]+'</span><b>'+t[0]+'</b></button>'}
 function homeHtml(){
  var c=calc();
- var K=[['due','💰','teal','مبالغ مستحقة',fmt(c.due),'عرض التفاصيل','statements'],
-        ['low','📦','purple','بضاعة ناقصة',c.low,'عرض الأصناف','products'],
-        ['rep','🛠️','green','مواعيد الصيانة',c.rep,'عرض التفاصيل','repairs'],
-        ['inv','🧾','blue','فواتير جديدة',c.inv,'عرض الفواتير','salesStore'],
-        ['not','🔔','orange','إشعارات جديدة',c.notif,'عرض الكل','fn:alerts']];
- var h=mgrid()+'<div class="v30-kpis">'+K.map(function(k){return '<div class="v30-k '+k[2]+'"><span class="ico">'+k[1]+'</span><div class="num" id="v30-'+k[0]+'">'+k[4]+'</div><div class="lbl">'+k[3]+'</div><button type="button" onclick="v30Go(\''+k[6]+'\')">← '+k[5]+'</button></div>'}).join('')+
+ var K=[['shift','🔐','teal','تقفيل اليوم',c.shiftTxt,'قفل اليوم','shiftClose'],
+        ['cnt','💵','purple','عد النقود',fmt(c.counted),'عدّ النقدية','moneyCounter'],
+        ['profit2','📈','green','ملخص الأرباح والخسائر',fmt(c.profit),'عرض الملخص','fn:daily'],
+        ['cash','🗄️','blue','النقدية المتوقعة في الدرج',fmt(c.cash),'مطابقة النقدية','fn:daily'],
+        ['rep','🛠️','orange','مواعيد الصيانة',c.rep,'عرض التفاصيل','repairs']];
+ var h=mgrid()+'<div class="v30-kpis">'+K.map(function(k){return '<div class="v30-k '+k[2]+'"><span class="ico">'+k[1]+'</span><div class="num'+(k[0]==='shift'?' t':'')+'" id="v30-'+k[0]+'"'+(k[0]==='profit2'&&c.profit<0?' style="color:#d62828"':'')+'>'+k[4]+'</div><div class="lbl">'+k[3]+'</div><button type="button" onclick="v30Go(\''+k[6]+'\')">← '+k[5]+'</button></div>'}).join('')+
  '<div class="v30-sum"><h3><span>ملخص حركة اليوم</span><span>📊</span></h3>'+
  '<div class="r"><span>🛒 إجمالي المبيعات</span><span class="v" id="v30-sales" style="color:#0a8f3c">'+fmt(c.sales)+'</span></div>'+
  '<div class="r"><span>🛍️ إجمالي المشتريات</span><span class="v" id="v30-purchases" style="color:#1a56c4">'+fmt(c.purchases)+'</span></div>'+
@@ -1292,9 +1297,10 @@ window.aysHomeHtml=function(){var o='';try{o=_oldHome?_oldHome():''}catch(e){}re
 
 function refresh(){
  if(active!=='home')return;
- var c=calc(),m={due:fmt(c.due),low:c.low,rep:c.rep,inv:c.inv,not:c.notif,sales:fmt(c.sales),purchases:fmt(c.purchases),profit:fmt(c.profit),expenses:fmt(c.expenses)};
+ var c=calc(),m={shift:c.shiftTxt,cnt:fmt(c.counted),profit2:fmt(c.profit),cash:fmt(c.cash),rep:c.rep,sales:fmt(c.sales),purchases:fmt(c.purchases),profit:fmt(c.profit),expenses:fmt(c.expenses)};
  Object.keys(m).forEach(function(k){var e=$('v30-'+k);if(e&&e.textContent!==String(m[k]))e.textContent=m[k]});
  var p=$('v30-profit');if(p)p.style.color=c.profit>=0?'#0a8f3c':'#d62828';
+ var p2=$('v30-profit2');if(p2)p2.style.color=c.profit>=0?'':'#d62828';
  var dd=$('v30Debt');if(dd)dd.innerHTML=debtHtml(6);
 }
 
@@ -1628,7 +1634,7 @@ function gate(){
    wire(cd,i2,'.campaign-contact',l);
   }
  }
- gateCust();
+ gateCust();try{extras()}catch(e){console.error(e)}
 }
 try{var gt=0,mo=new MutationObserver(function(){if(gt)return;gt=requestAnimationFrame(function(){gt=0;try{gate()}catch(e){}})});mo.observe($('app'),{childList:true,subtree:true})}catch(e){}
 try{var _as=window.appSearch;window.appSearch=function(v){var r=_as.apply(this,arguments);try{gateCust()}catch(e){}return r}}catch(e){}
@@ -1658,6 +1664,73 @@ function themePicker(){
 }
 window.v30SetTheme=function(id){applyTheme(id);var b=document.querySelectorAll('#v30Modal .v30-th');[].forEach.call(b,function(x){x.classList.toggle('on',x.dataset.id===id)});try{render()}catch(e){}};
 try{applyTheme(curTheme().id)}catch(e){}
+
+/* ---------- v30.6: سجل الصيانة بالصور + سجلات الفواتير مع التعديل تحت كل قسم ---------- */
+function shrink(file,max,q){return new Promise(function(res,rej){var im=new Image(),u=URL.createObjectURL(file);im.onload=function(){var r=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*r);c.height=Math.round(im.height*r);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(function(b){b?res(b):rej(new Error('compress'))},'image/jpeg',q)};im.onerror=function(){rej(new Error('img'))};im.src=u})}
+function photoBlock(rec){
+ var d=document.createElement('div');d.className='v30-ph';
+ d.innerHTML='<b>📷 صور الجهاز (حتى صورتين)</b><div class="v30-slots">'+[1,2].map(function(i){var u=rec&&rec['photo'+i]||'';
+  return '<div class="v30-slot" data-i="'+i+'"><input type="hidden" name="photo'+i+'" value="'+esc(u)+'"><label class="pv"><span class="pvc">'+(u?'<img src="'+esc(u)+'" alt="">':'＋ صورة '+i)+'</span><input type="file" accept="image/*" class="pf"></label><button type="button" class="px"'+(u?'':' style="display:none"')+'>✕</button></div>'}).join('')+'</div><small class="v30-note">الصورة تُضغط تلقائيًا قبل الرفع وتظهر في سجل الصيانة.</small>';
+ [].forEach.call(d.querySelectorAll('.v30-slot'),function(sl){
+  var inp=sl.querySelector('.pf'),hid=sl.querySelector('input[type=hidden]'),pvc=sl.querySelector('.pvc'),x=sl.querySelector('.px'),i=sl.dataset.i;
+  inp.addEventListener('change',function(){var f=inp.files&&inp.files[0];if(!f)return;
+   if(!cloudClient||!cloudSession){inp.value='';return alert('سجّل الدخول واتصل بالسحابة أولًا لرفع الصورة.')}
+   var form=sl.closest('form'),btn=form&&form.querySelector('button.primary');if(btn)btn.disabled=true;pvc.textContent='⏳ جارٍ الرفع...';
+   shrink(f,1280,.78).then(function(b){var path=cloudSession.user.id+'/repair-'+Date.now()+'-'+i+'.jpg';
+    return cloudClient.storage.from('store-product-images').upload(path,b,{upsert:true,contentType:'image/jpeg'}).then(function(r){if(r.error)throw r.error;return cloudClient.storage.from('store-product-images').getPublicUrl(path).data.publicUrl})})
+   .then(function(url){hid.value=url;pvc.innerHTML='<img src="'+esc(url)+'" alt="">';x.style.display=''})
+   .catch(function(e){pvc.textContent='＋ صورة '+i;alert('تعذر رفع الصورة: '+(e&&e.message?e.message:e))})
+   .then(function(){if(btn)btn.disabled=false;inp.value=''});
+  });
+  x.addEventListener('click',function(){hid.value='';pvc.textContent='＋ صورة '+i;x.style.display='none'});
+ });
+ return d;
+}
+var logQ='';
+function canAdv(){try{return aysCan('advanced')}catch(e){return false}}
+function logRows(kind,q){
+ var can=canAdv(),L,h;
+ if(kind==='rep'){
+  L=data.repairs.filter(function(x){return match(q,[x.customer,x.device,x.phone,x.problem,x.status,x.date])}).slice(0,60);
+  if(!L.length)return '<div class="empty">لا توجد سجلات صيانة.</div>';
+  return '<div class="tablewrap"><table><thead><tr><th>التاريخ</th><th>العميل</th><th>الجهاز</th><th>العطل</th><th>الحالة</th><th>الصور</th><th>السعر</th><th>المدفوع</th><th>المتبقي</th><th class="no-print">إجراءات</th></tr></thead><tbody>'+L.map(function(x){
+   var ph=[x.photo1,x.photo2].filter(Boolean).map(function(u){return '<a href="'+esc(u)+'" target="_blank" rel="noopener"><img class="v30-pt" loading="lazy" src="'+esc(u)+'" alt=""></a>'}).join('')||'—';
+   return '<tr><td>'+esc(x.date||'')+'</td><td>'+esc(x.customer||'')+'<small class="muted"> '+esc(x.phone||'')+'</small></td><td>'+esc(x.device||'')+'</td><td>'+esc(x.problem||'')+'</td><td>'+esc(x.status||'')+'</td><td class="v30-pts">'+ph+'</td><td>'+money(x.cost)+'</td><td>'+money(x.paid)+'</td><td>'+money(Math.max(0,n(x.cost)-n(x.paid)))+'</td><td class="no-print"><div class="actions"><button class="secondary small" onclick="editRecord(\'repairs\',\''+esc(x.id)+'\')">✏️ تعديل</button><button class="success small" onclick="printRepair(\''+esc(x.id)+'\')">طباعة إيصال</button><button class="danger small" onclick="removeRecord(\'repairs\',\''+esc(x.id)+'\')">حذف</button></div></td></tr>'}).join('')+'</tbody></table></div>';
+ }
+ if(kind==='sale'){
+  L=data.sales.filter(function(s){return match(q,[s.invoice,s.customer_name,s.date,s.product])}).slice(0,60);
+  if(!L.length)return '<div class="empty">لا توجد فواتير.</div>';
+  return '<div class="tablewrap"><table><thead><tr><th>الفاتورة</th><th>التاريخ</th><th>العميل</th><th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th><th class="no-print">إجراءات</th></tr></thead><tbody>'+L.map(function(s){
+   return '<tr><td>'+esc(s.invoice||'')+'</td><td>'+esc(s.date||'')+'</td><td>'+esc(s.customer_name||'نقدي')+'</td><td>'+money(s.total)+'</td><td>'+money(s.paid)+'</td><td>'+money(s.due)+'</td><td class="no-print"><div class="actions"><button class="secondary small" onclick="printInvoice(\''+esc(s.id)+'\')">🖨 طباعة</button>'+(can?'<button class="secondary small" onclick="v30EditSale(\''+esc(s.id)+'\')">✏️ تعديل</button><button class="danger small" onclick="v30CancelSale(\''+esc(s.id)+'\')">✖️ إلغاء</button>':'')+'</div></td></tr>'}).join('')+'</tbody></table></div>';
+ }
+ L=data.purchases.filter(function(x){return match(q,[x.product,x.supplier,x.date])}).slice(0,60);
+ if(!L.length)return '<div class="empty">لا توجد فواتير مشتريات.</div>';
+ return '<div class="tablewrap"><table><thead><tr><th>التاريخ</th><th>المورد</th><th>الصنف</th><th>الكمية</th><th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th><th class="no-print">إجراءات</th></tr></thead><tbody>'+L.map(function(x){
+  return '<tr><td>'+esc(x.date||'')+'</td><td>'+esc(x.supplier||'')+'</td><td>'+esc(x.product||'')+'</td><td>'+n(x.quantity)+'</td><td>'+money(x.total)+'</td><td>'+money(x.paid)+'</td><td>'+money(Math.max(0,n(x.total)-n(x.paid)))+'</td><td class="no-print">'+(can?'<div class="actions"><button class="secondary small" onclick="v30EditPurchase(\''+esc(x.id)+'\')">✏️ تعديل</button><button class="secondary small" onclick="v30RetPurchase(\''+esc(x.id)+'\')">↩️ إرجاع</button><button class="danger small" onclick="v30CancelPurchase(\''+esc(x.id)+'\')">✖️ إلغاء</button></div>':'')+'</td></tr>'}).join('')+'</tbody></table></div>';
+}
+window.v30LogQ=function(v){logQ=v;var s=$('v30Log'),l=$('v30LogList');if(s&&l)l.innerHTML=logRows(s.dataset.k,v)};
+var LOGT={rep:'🔧 سجل الصيانة (بالصور) — تعديل وطباعة',sale:'🧾 فواتير العملاء — تعديل وإلغاء',pur:'🚚 فواتير الموردين (المشتريات) — تعديل وإرجاع وإلغاء'};
+function extras(){
+ var a=$('app');if(!a)return;
+ // 1) صور الصيانة داخل نموذج الصيانة
+ if(active==='repairs'){
+  var f=a.querySelector('form[onsubmit*="\'repairs\'"]');
+  if(f&&!f.dataset.v30p){f.dataset.v30p='1';var rec=editing&&data.repairs.filter(function(x){return x.id===editing})[0],fg=f.querySelector('.formgrid');if(fg)fg.parentNode.insertBefore(photoBlock(rec),fg.nextSibling)}
+ }
+ // 2) سجل الفواتير تحت كل قسم
+ var kind={repairs:'rep',customers:'sale',statements:'pur'}[active],ex=$('v30Log');
+ if(kind&&!(ex&&ex.dataset.k===kind&&a.contains(ex))){
+  if(ex)ex.remove();
+  var sec=document.createElement('section');sec.className='card';sec.id='v30Log';sec.dataset.k=kind;
+  sec.innerHTML='<h2>'+LOGT[kind]+'</h2><input class="v30-search" type="search" placeholder="🔍 بحث..." oninput="v30LogQ(this.value)"><div id="v30LogList"></div>';
+  a.appendChild(sec);logQ='';$('v30LogList').innerHTML=logRows(kind,'');
+ }
+ // 3) أزرار التعديل والإلغاء في جداول المبيعات
+ if(active==='salesStore'||active==='salesWarehouse'){
+  if(canAdv())[].forEach.call(a.querySelectorAll('button[onclick^="printInvoice("]'),function(b){if(b.dataset.v30)return;b.dataset.v30='1';var m=/printInvoice\('([^']+)'\)/.exec(b.getAttribute('onclick'));if(!m)return;
+   b.insertAdjacentHTML('afterend',' <button class="secondary small" onclick="v30EditSale(\''+m[1]+'\')">✏️ تعديل</button> <button class="danger small" onclick="v30CancelSale(\''+m[1]+'\')">✖️ إلغاء</button>')});
+ }
+}
 /* ---------- ربط الدورة الحالية بدون تعديل المنطق الأصلي ---------- */
 function after(){
  try{
@@ -1984,6 +2057,16 @@ body.v30l-feature .v30-it[data-k=requested],body.v30l-feature .v30-it[data-k=mac
 body.v30l-feature .v30-it[data-k=requested] .ti,body.v30l-feature .v30-it[data-k=machines] .ti{width:46%;height:auto;aspect-ratio:1.5;overflow:hidden;border-radius:18px;flex:none}
 body.v30l-feature .v30-it[data-k=requested] .ti img,body.v30l-feature .v30-it[data-k=machines] .ti img{width:112%;max-width:none;height:auto;margin:-2% 0 0 -6%;aspect-ratio:auto;object-fit:fill}
 body.v30l-feature .v30-it[data-k=requested] b,body.v30l-feature .v30-it[data-k=machines] b{display:block;flex:1;text-align:center;color:#fff;font-size:clamp(22px,2.6vw,38px);font-weight:900;text-shadow:0 3px 8px #0006}
+/* v30.6 */
+.v30-k .num.t{font-size:21px;padding:6px 0}
+.v30-ph{margin:12px 0;padding:12px;border:1.5px dashed #9db9ea;border-radius:14px;background:#f5f9ff;color:#16294d}
+.v30-slots{display:flex;gap:12px;margin:10px 0;flex-wrap:wrap}
+.v30-slot{position:relative;width:150px}
+.v30-slot .pv{display:grid;place-items:center;width:150px;height:110px;border-radius:12px;border:2px solid #cfdcf2;background:#fff;overflow:hidden;cursor:pointer;font-weight:700;color:#1a56c4;text-align:center}
+.v30-slot .pv img{width:100%;height:100%;object-fit:cover}.v30-slot .pf{display:none}
+.v30-slot .px{position:absolute;top:-8px;left:-8px;width:26px;height:26px;border-radius:50%;border:0;background:#d62828;color:#fff;font-weight:900;cursor:pointer}
+.v30-pts{white-space:nowrap}.v30-pt{width:46px;height:46px;object-fit:cover;border-radius:8px;border:1px solid #cfdcf2;margin-inline-end:4px;vertical-align:middle}
+#v30Log .tablewrap{margin-top:8px}
 @media print{#v30Status,#v30Banner,#v30Overlay{display:none!important}}
 </style>
 
