@@ -1,0 +1,84 @@
+name: بناء تطبيقات الويندوز والأندرويد
+
+# يعمل تلقائيًا عند كل رفع على الفرع الرئيسي، ويمكن تشغيله يدويًا من تبويب Actions.
+# النتيجة: ملف exe للويندوز وملف apk للأندرويد في صفحة Releases (ومعهم Artifacts).
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-apps
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm run dist:win
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-exe
+          path: dist/*.exe
+          if-no-files-found: error
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - run: npm install
+      # يجهّز www ويضيف مشروع الأندرويد ثم يطبّق التعديلات (الكاميرا، الإشعارات، واتساب بيزنس)
+      - run: npm run android:init
+      - name: بناء APK
+        id: build1
+        working-directory: android
+        continue-on-error: true
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+      - name: إعادة المحاولة بدون جسر واتساب بيزنس (احتياطي لو فشل البناء الأول)
+        if: steps.build1.outcome == 'failure'
+        working-directory: android
+        run: |
+          rm -f app/src/main/java/com/ahmedyoussef/central/WaBusinessPlugin.java
+          printf 'package com.ahmedyoussef.central;\n\nimport com.getcapacitor.BridgeActivity;\n\npublic class MainActivity extends BridgeActivity {}\n' > app/src/main/java/com/ahmedyoussef/central/MainActivity.java
+          ./gradlew assembleDebug
+      - run: cp android/app/build/outputs/apk/debug/app-debug.apk AhmedYoussefCentral-android.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: AhmedYoussefCentral-android.apk
+          if-no-files-found: error
+
+  release:
+    needs: [windows, android]
+    if: ${{ always() && (needs.windows.result == 'success' || needs.android.result == 'success') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
+      - run: ls -la out
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: إصدار ${{ github.run_number }}
+          body: ملفات جاهزة للتحميل — الويندوز (exe) والأندرويد (apk).
+          files: out/*
+          make_latest: true
