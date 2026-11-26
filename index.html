@@ -528,31 +528,12 @@ function n(v){return Number(v)||0}
 function money(v){return n(v).toLocaleString('ar-EG',{maximumFractionDigits:2})+' ج.م'}
 function esc(v){return aysClean(v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function el(id){return document.getElementById(id)}
-function go(k,fromPop){if(!aysCan(k)){alert('ليس لديك صلاحية لهذا القسم');return}if(!fromPop&&k!==active){try{window.aysNavStack.push(active)}catch(e){}try{history.pushState({aysShop:true,section:k},'', '#'+k)}catch(e){}}if(k!==active){aysPrev=active;aysMcView=''}active=k;editing=null;searchTerm='';drawNav();render()}
-function aysShowExitDialog(){var old=document.getElementById('aysExitConfirm');if(old){old.style.display='flex';return}var wrap=document.createElement('div');wrap.id='aysExitConfirm';wrap.style.cssText='position:fixed;inset:0;z-index:2147483647;background:rgba(0,0,0,.58);display:flex;align-items:center;justify-content:center;padding:18px;direction:rtl;font-family:Tahoma,Arial,sans-serif';wrap.innerHTML='<div role="dialog" aria-modal="true" style="width:min(360px,100%);background:#fff;color:#172033;border-radius:16px;padding:22px;box-shadow:0 16px 55px #0005;text-align:center"><div style="font-size:32px;margin-bottom:8px">🚪</div><div style="font-size:20px;font-weight:700;margin-bottom:10px">هل تريد الخروج من البرنامج؟</div><div style="font-size:14px;color:#64748b;margin-bottom:20px">اختَر نعم للخروج أو لا للعودة إلى البرنامج.</div><div style="display:flex;gap:10px;justify-content:center"><button id="aysExitYes" style="border:0;border-radius:9px;padding:10px 25px;background:#dc2626;color:#fff;font-size:16px;font-weight:700;cursor:pointer">نعم</button><button id="aysExitNo" style="border:0;border-radius:9px;padding:10px 25px;background:#e2e8f0;color:#172033;font-size:16px;font-weight:700;cursor:pointer">لا</button></div></div>';document.body.appendChild(wrap);function stay(){wrap.style.display='none';try{history.pushState({aysShop:true,section:active||'home'},'', '#'+(active||'home'))}catch(e){}}document.getElementById('aysExitNo').onclick=stay;document.getElementById('aysExitYes').onclick=function(){window.removeEventListener('beforeunload',aysBeforeUnload);try{var _A=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.App;if(_A&&_A.exitApp){_A.exitApp();return}}catch(e){}try{window.close()}catch(e){}wrap.querySelector('div[role="dialog"]').innerHTML='<div style="font-size:20px;font-weight:700;margin-bottom:10px">يمكنك الآن إغلاق التبويب</div><div style="color:#64748b">المتصفح لا يسمح للموقع بإغلاق التبويب تلقائيًا في بعض الحالات.</div><button id="aysExitDone" style="margin-top:18px;border:0;border-radius:9px;padding:10px 25px;background:#0f766e;color:#fff;font-size:16px;cursor:pointer">رجوع للبرنامج</button>';document.getElementById('aysExitDone').onclick=function(){wrap.remove();try{history.pushState({aysShop:true,section:active||'home'},'', '#'+(active||'home'))}catch(e){}}}}
+function go(k,fromPop){if(!aysCan(k)){alert('ليس لديك صلاحية لهذا القسم');return}if(!fromPop&&k!==active){try{history.pushState({aysShop:true,section:k},'', '#'+k)}catch(e){}}if(k!==active){aysPrev=active;aysMcView=''}active=k;editing=null;searchTerm='';drawNav();render()}
+function aysShowExitDialog(){var old=document.getElementById('aysExitConfirm');if(old){old.style.display='flex';return}var wrap=document.createElement('div');wrap.id='aysExitConfirm';wrap.style.cssText='position:fixed;inset:0;z-index:2147483647;background:rgba(0,0,0,.58);display:flex;align-items:center;justify-content:center;padding:18px;direction:rtl;font-family:Tahoma,Arial,sans-serif';wrap.innerHTML='<div role="dialog" aria-modal="true" style="width:min(360px,100%);background:#fff;color:#172033;border-radius:16px;padding:22px;box-shadow:0 16px 55px #0005;text-align:center"><div style="font-size:32px;margin-bottom:8px">🚪</div><div style="font-size:20px;font-weight:700;margin-bottom:10px">هل تريد الخروج من البرنامج؟</div><div style="font-size:14px;color:#64748b;margin-bottom:20px">اختَر نعم للخروج أو لا للعودة إلى البرنامج.</div><div style="display:flex;gap:10px;justify-content:center"><button id="aysExitYes" style="border:0;border-radius:9px;padding:10px 25px;background:#dc2626;color:#fff;font-size:16px;font-weight:700;cursor:pointer">نعم</button><button id="aysExitNo" style="border:0;border-radius:9px;padding:10px 25px;background:#e2e8f0;color:#172033;font-size:16px;font-weight:700;cursor:pointer">لا</button></div></div>';document.body.appendChild(wrap);function stay(){wrap.style.display='none';try{history.pushState({aysShop:true,section:active||'home'},'', '#'+(active||'home'))}catch(e){}}document.getElementById('aysExitNo').onclick=stay;document.getElementById('aysExitYes').onclick=function(){window.removeEventListener('beforeunload',aysBeforeUnload);try{window.close()}catch(e){}wrap.querySelector('div[role="dialog"]').innerHTML='<div style="font-size:20px;font-weight:700;margin-bottom:10px">يمكنك الآن إغلاق التبويب</div><div style="color:#64748b">المتصفح لا يسمح للموقع بإغلاق التبويب تلقائيًا في بعض الحالات.</div><button id="aysExitDone" style="margin-top:18px;border:0;border-radius:9px;padding:10px 25px;background:#0f766e;color:#fff;font-size:16px;cursor:pointer">رجوع للبرنامج</button>';document.getElementById('aysExitDone').onclick=function(){wrap.remove();try{history.pushState({aysShop:true,section:active||'home'},'', '#'+(active||'home'))}catch(e){}}}}
 function aysBeforeUnload(ev){ev.preventDefault();ev.returnValue=' ';return ' ';}
 window.addEventListener('popstate',function(ev){if(active!=='home'){var target=ev.state&&ev.state.aysShop&&ev.state.section?ev.state.section:'home';go(target,true);try{history.pushState({aysShop:true,section:target},'', '#'+target)}catch(e){}}else{try{history.pushState({aysShop:true,section:'home'},'', '#home')}catch(e){}aysShowExitDialog()}});
 window.addEventListener('beforeunload',aysBeforeUnload);
 try{history.replaceState({aysShop:true,section:active||'home'},'', '#'+(active||'home'));history.pushState({aysShop:true,section:active||'home'},'', '#'+(active||'home'))}catch(e){}
-/* 31.1.2: زر الرجوع في أندرويد — لا نعتمد على history داخل WebView (كان يخرج من البرنامج مباشرة) */
-window.aysNavStack=window.aysNavStack||[];
-(function(){try{
-  var A=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.App;
-  if(!A||!A.addListener)return;
-  A.addListener('backButton',function(){
-    try{
-      var ex=document.getElementById('aysExitConfirm');
-      if(ex&&ex.style.display!=='none'){ex.style.display='none';return}
-      if(typeof aysMcView!=='undefined'&&aysMcView){aysMcView='';render();return}
-      if(active!=='home'){
-        var prev=window.aysNavStack.pop();
-        if(!prev||prev===active)prev='home';
-        go(prev,true);return;
-      }
-      aysShowExitDialog();
-    }catch(e){try{aysShowExitDialog()}catch(_){}}
-  });
-}catch(e){}})();
 function updateTopDateTime(){var e=el('topDateTime');if(!e)return;var d=new Date();try{e.textContent=d.toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+' — '+d.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}catch(_){e.textContent=d.toLocaleDateString()+' — '+d.toLocaleTimeString()}}
 var dailyWisdom=[
  {kind:'ذكر',text:'سُبْحَانَ اللهِ وَبِحَمْدِهِ، سُبْحَانَ اللهِ الْعَظِيمِ.'},
@@ -2344,6 +2325,42 @@ try{render()}catch(e){}
 setInterval(function(){status();badge();refresh()},15000);
 setInterval(status,60000);
 window.addEventListener('resize',function(){if(window.innerWidth>=1000)closeDrawer()});
+/* ---------- v31.2: تصفير الماكينات تلقائيًا كل أحد وثلاثاء وخميس ----------
+   عند التصفير تُسجَّل حركة «تصفير الماكينة» بقيمة رصيد الماكينة (خارج)، فتنخفض بها
+   النقدية المتوقعة بالدرج وأرصدة المحافظ والخزينة بنفس منطق الحركات الحالي بدون تغيير أي معادلة. */
+var RST_DAYS=[0,2,4],RST_NAMES=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+function rstDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function rstIsMachine(w){return w.kind==='machine'||(!w.kind&&/ماكين/.test(String(w.name||'')))}
+function rstLast(){var d=new Date();for(var i=0;i<7;i++){if(RST_DAYS.indexOf(d.getDay())>-1)return{date:rstDate(d),name:RST_NAMES[d.getDay()]};d.setDate(d.getDate()-1)}return null}
+function rstRun(){
+ try{
+  var g=document.getElementById('cloudGate');if(g&&getComputedStyle(g).display!=='none')return;
+  if(!data||!Array.isArray(data.wallets)||!data.wallets.length)return;
+  var L=rstLast();if(!L)return;
+  var done=[],changed=false;
+  data.wallets.forEach(function(w){
+   if(!rstIsMachine(w)||(w.last_reset&&w.last_reset>=L.date))return;
+   changed=true;
+   /* أول تفعيل: لا نصفّر بأثر رجعي، نبدأ من أقرب يوم تصفير قادم */
+   if(!w.last_reset&&L.date!==today()){w.last_reset=L.date;return}
+   w.last_reset=L.date;
+   var bal=Math.round(wqBal(w)*100)/100;
+   if(Math.abs(bal)<0.005)return;
+   var id='rst-'+w.id+'-'+L.date;
+   if(data.walletTransactions.some(function(x){return x.id===id}))return;
+   data.walletTransactions.unshift({id:id,date:today(),time:new Date().toTimeString().slice(0,5),wallet_id:w.id,direction:bal>0?'out':'in',amount:Math.abs(bal),type:'تصفير الماكينة',reference:'تصفير يوم '+L.name,commission:0,notes:'تصفير تلقائي',auto:'reset'});
+   aysAudit('تصفير ماكينة',w.name+': '+fmt(Math.abs(bal)));
+   done.push(w.name+' ('+fmt(Math.abs(bal))+')');
+  });
+  if(!changed)return;
+  save();
+  if(done.length){
+   wqToast('🔄 تم تصفير: '+done.join('، '));
+   var ae=document.activeElement;if(!(ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)))render();
+  }
+ }catch(e){console.error('rstRun',e)}
+}
+setTimeout(rstRun,4000);setInterval(rstRun,60000);document.addEventListener('visibilitychange',function(){if(!document.hidden)rstRun()});
 })();
 
 })();

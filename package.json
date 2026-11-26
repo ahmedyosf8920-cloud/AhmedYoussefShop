@@ -1,6 +1,6 @@
 {
   "name": "ahmed-youssef-central",
-  "version": "31.1.2",
+  "version": "31.2.0",
   "description": "سنترال أحمد يوسف لخدمات المحمول",
   "author": "Ahmed Youssef",
   "main": "desktop/main.js",
@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@capacitor/android": "^6.1.2",
-    "@capacitor/app": "^6.0.2",
     "@capacitor/core": "^6.1.2",
     "@capacitor/filesystem": "^6.0.1",
     "@capacitor/local-notifications": "^6.1.0",
